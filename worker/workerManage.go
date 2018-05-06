@@ -35,9 +35,7 @@ func (p *WorkPool) Start(num int ){
 	if queNum >=500 {
 		num = 200
 		queNum = num*2
-
 	}
-
 	p.taskPool = make(chan taskWork,queNum)
 	//p.taskQue = make(chan taskWork,queLen)
 	//记录协程个数
