@@ -26,4 +26,5 @@ func Run( param[] worker.ParamType){
 
 	}
 	jobTest(paramJob);
+
 }

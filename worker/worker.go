@@ -18,17 +18,7 @@ var WorkMaxTask int
 var WorkTaskPool chan taskWork
 var WorkTaskReturn chan []ReturnType
 
-//循环启动协程池
-func StartPool(maxTask int){
-	WorkMaxTask = maxTask
-	WorkTaskPool = make(chan taskWork,maxTask)
-	WorkTaskReturn =  make(chan []ReturnType,maxTask)
-	for i:=0;i<maxTask;i++{
-		var t  = taskWork{}
-		fmt.Println("start task:",i)
-		t.start()
-	}
-}
+
 //启动任务
 func (t *taskWork) start(){
 	go func() {
@@ -38,6 +28,7 @@ func (t *taskWork) start(){
 				if(funcRun.startBool == true ){
 					funcRun.Run(funcRun.params)
 				}else{
+					fmt.Println("task  stop!");
 					return
 				}
 			case <-time.After(time.Millisecond*1000):
@@ -48,13 +39,32 @@ func (t *taskWork) start(){
 		}
 	}()
 }
+
+func (t *taskWork) stop(){
+	fmt.Println("t stop ")
+	t.startBool = false;
+}
+func createTask() taskWork{
+	var funcJob Job
+	var paramSlice []ParamType
+	return taskWork{funcJob,true,paramSlice}
+}
+
+//循环启动协程池
+func StartPool(maxTask int){
+	WorkMaxTask = maxTask
+	WorkTaskPool = make(chan taskWork,maxTask)
+	WorkTaskReturn =  make(chan []ReturnType,maxTask)
+
+	for i:=0;i<maxTask;i++{
+		var t  = createTask()
+		fmt.Println("start task:",i)
+		t.start()
+	}
+}
 //消费任务
 func Dispatch(funcJob Job,params ...ParamType){
-	var paramSlice []ParamType
-	for _,param := range params{
-		paramSlice = append(paramSlice,param)
-	}
-	WorkTaskPool <- taskWork{funcJob,true,paramSlice}
+	WorkTaskPool <- taskWork{funcJob,true,params}
 }
 //停止协程池
 func StopPool(){
