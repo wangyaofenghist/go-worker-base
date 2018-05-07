@@ -11,7 +11,7 @@ var poolOne worker.WorkPool
 func init() {
 	worker.StartPool(6)
 	poolOne = worker.GetPool("one")
-	poolOne.Start(500)
+	poolOne.Start(50)
 }
 
 var JobCReturn chan int
