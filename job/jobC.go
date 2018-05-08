@@ -2,19 +2,18 @@ package job
 
 import (
 	"fmt"
-	"github.com/wangyaofenghist/go-worker-base/worker"
 )
 
-func RunC(param []worker.ParamType) {
+func RunC(param []interface{}) {
 	var a int
 	var b int
-	var paramMap map[string]worker.ParamType
-	var resultChan chan worker.ReturnType
+	var paramMap map[string]interface{}
+	var resultChan chan interface{}
 	for _, val := range param {
 		switch v := val.(type) {
-		case map[string]worker.ParamType:
+		case map[string]interface{}:
 			paramMap = v
-		case chan worker.ReturnType:
+		case chan interface{}:
 			resultChan = v
 		}
 	}

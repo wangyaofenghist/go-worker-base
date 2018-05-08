@@ -2,9 +2,8 @@ package job
 
 import (
 	"fmt"
-	"github.com/wangyaofenghist/go-worker-base/worker"
 )
 
-func RunA(param []worker.ParamType) {
+func RunA(param []interface{}) {
 	fmt.Println(param)
 }

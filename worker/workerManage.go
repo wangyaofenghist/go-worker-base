@@ -50,7 +50,7 @@ func (p *WorkPool) Start(num int) {
 	}
 }
 
-//初始化 work池
+//初始化 work池 后期应该考虑如何 自动 增减协程数，以达到最优
 func (p *WorkPool) workInit(id int) {
 	go func(idNum int) {
 		//var i int = 0
@@ -70,21 +70,7 @@ func (p *WorkPool) workInit(id int) {
 					p.workNum--
 					return
 				}
-
-				/*default:
-				i++
-				//fmt.Println("default init",i);
-				//不添加 会导致 cpu 急剧上升
-				fmt.Println(p.taskPool, 111111111111111)
-				if len(p.taskPool) > 1000 {
-					time.Sleep(time.Millisecond * 100)
-				} else {
-
-					time.Sleep(time.Millisecond * 1000)
-				}*/
-
 			}
-
 		}
 	}(id)
 
@@ -94,12 +80,12 @@ func (p *WorkPool) workInit(id int) {
 func (p *WorkPool) Stop() {
 	p.stopTopic = true
 }
-func (p *WorkPool) Run(funcJob Job, params ...ParamType) {
+func (p *WorkPool) Run(funcJob Job, params ...interface{}) {
 	p.taskPool <- taskWork{funcJob, true, params}
 }
 
 //用select 去做
-func (p *WorkPool) Run2(funcJob Job, params ...ParamType) {
+func (p *WorkPool) Run2(funcJob Job, params ...interface{}) {
 	task := taskWork{funcJob, true, params}
 	select {
 	//正常写入

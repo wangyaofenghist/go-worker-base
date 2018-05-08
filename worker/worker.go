@@ -6,18 +6,16 @@ import (
 	"time"
 )
 
-type ParamType interface{}
-type ReturnType interface{}
-type Job func([]ParamType)
+type Job func([]interface{})
 type taskWork struct {
 	Run       Job
 	startBool bool
-	params    []ParamType
+	params    []interface{}
 }
 
 var WorkMaxTask int
 var WorkTaskPool chan taskWork
-var WorkTaskReturn chan []ReturnType
+var WorkTaskReturn chan []interface{}
 
 //启动任务
 func (t *taskWork) start() {
@@ -33,8 +31,6 @@ func (t *taskWork) start() {
 				}
 			case <-time.After(time.Millisecond * 1000):
 				fmt.Print("time out")
-			default:
-				time.Sleep(10)
 			}
 		}
 	}()
@@ -46,7 +42,7 @@ func (t *taskWork) stop() {
 }
 func createTask() taskWork {
 	var funcJob Job
-	var paramSlice []ParamType
+	var paramSlice []interface{}
 	return taskWork{funcJob, true, paramSlice}
 }
 
@@ -54,7 +50,7 @@ func createTask() taskWork {
 func StartPool(maxTask int) {
 	WorkMaxTask = maxTask
 	WorkTaskPool = make(chan taskWork, maxTask)
-	WorkTaskReturn = make(chan []ReturnType, maxTask)
+	WorkTaskReturn = make(chan []interface{}, maxTask)
 
 	for i := 0; i < maxTask; i++ {
 		var t = createTask()
@@ -64,14 +60,14 @@ func StartPool(maxTask int) {
 }
 
 //消费任务
-func Dispatch(funcJob Job, params ...ParamType) {
+func Dispatch(funcJob Job, params ...interface{}) {
 	WorkTaskPool <- taskWork{funcJob, true, params}
 }
 
 //停止协程池
 func StopPool() {
 	var funcJob Job
-	var paramSlice []ParamType
+	var paramSlice []interface{}
 	for i := 0; i < WorkMaxTask; i++ {
 		WorkTaskPool <- taskWork{funcJob, false, paramSlice}
 	}
