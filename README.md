@@ -73,7 +73,6 @@ func (f *runWorker) Run(param []interface{}) {
 
 //主函数
 func main() {
-   var resultChan = make(chan interface{})
    var runFunc runWorker = runWorker{}
    funcs.AddCall("test4", test.Test4)
    for i := 0; i < 10000; i++ {
@@ -81,7 +80,7 @@ func main() {
       poolOne.Run(runFunc.Run, "test4", " cc ", " dd")
       poolOne.Run(runFunc.Run, "test4", " ee ", " ff")
    }
+   time.Sleep(time.Millisecond * 1000)
    poolOne.Stop()
-   <-resultChan
 }
 ```
