@@ -28,11 +28,10 @@ func main() {
 	poolOne.Run(job.Run, 5, 6)
 	//var runcReturn worker.ReturnType
 	//利用map 传递地址的特性 来拿回结果
-
-	var resultChan = make(chan worker.ReturnType, 200)
+	var resultChan = make(chan interface{}, 200)
 	fmt.Println(resultChan)
 	for i := 0; i < 2000; i++ {
-		var paramMap = make(map[string]worker.ParamType)
+		var paramMap = make(map[string]interface{})
 		paramMap["a"] = 7 + i
 		paramMap["b"] = 8
 		poolOne.Run(job.RunC, paramMap)
