@@ -11,9 +11,8 @@ worker.go       为基础协程池数据结构
 ###实例1：
 
 ```
-
-poolOne = worker.GetPool("one")					//拿到一个协程池
-poolOne.Start(50)								//定义协程数量
+var poolOne worker.WorkPool
+poolOne.InitPool()					            //初始化一个协程池 实现了协程自动扩充收缩功能
 poolOne.Run(runFunc.Run, "test4", " aa ", " BB")//运行一个函数 runFunc.Run 为需要执行函数
 ```
 
@@ -58,8 +57,7 @@ type runWorker struct{}
 
 //初始化协程池 和回调参数
 func init() {
-   poolOne = worker.GetPool("one")
-   poolOne.Start(50)
+   poolOne.InitPool()
    funcs = call.CreateCall()
 
 }
@@ -78,7 +76,8 @@ func main() {
    for i := 0; i < 10000; i++ {
       poolOne.Run(runFunc.Run, "test4", " aa ", " BB")
       poolOne.Run(runFunc.Run, "test4", " cc ", " dd")
-      poolOne.Run(runFunc.Run, "test4", " ee ", " ff")
+      //RunAuto 可以在压力大的时候自动扩充
+      poolOne.RunAuto(runFunc.Run, "test4", " ee ", " ff")
    }
    time.Sleep(time.Millisecond * 1000)
    poolOne.Stop()
