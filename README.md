@@ -33,7 +33,7 @@ worker.StopPool()
 
 组合go-Call 通用回调方法，快速简单的实现业务并发，协程可控
 
-go-Call 地址：https://github.com/wangyaofenghist/go-worker-base
+go-Call 地址：https://github.com/wangyaofenghist/go-Call
 
 ```
 package main
