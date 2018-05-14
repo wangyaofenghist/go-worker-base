@@ -11,17 +11,18 @@ const (
 )
 
 type WorkPool struct {
-	taskPool  chan taskWork
-	workNum   int
-	maxNum    int
-	stopTopic bool
+	taskPool   chan taskWork
+	workNum    int
+	maxNum     int
+	defaultNum int
+	stopTopic  bool
 	//暂时没有用，考虑后期 作为冗余队列使用
 	taskQue chan taskWork
 }
 
 //得到一个线程池并返回 句柄
 func (p *WorkPool) InitPool() {
-	*p = WorkPool{workNum: workerNumDefault,
+	*p = WorkPool{defaultNum: workerNumDefault,
 		maxNum: workerNumMax, stopTopic: false,
 		taskPool: make(chan taskWork, workerNumDefault*2), taskQue: nil}
 
@@ -31,7 +32,7 @@ func (p *WorkPool) InitPool() {
 
 //开始work
 func (p *WorkPool) start() {
-	for i := 0; i < workerNumDefault; i++ {
+	for i := 0; i < p.defaultNum; i++ {
 		p.workInit(i)
 		fmt.Println("start pool task:", i)
 	}
@@ -39,6 +40,7 @@ func (p *WorkPool) start() {
 
 //初始化 work池 后期应该考虑如何 自动 增减协程数，以达到最优
 func (p *WorkPool) workInit(id int) {
+	p.workNum++
 	go func(idNum int) {
 		//var i int = 0
 		for {
@@ -129,8 +131,8 @@ func (p *WorkPool) workerRemoveConf() {
 	for {
 		select {
 		case <-time.After(time.Millisecond * 1000 * 600):
-			if p.workNum > workerNumDefault && len(p.taskPool) == 0 && len(p.taskQue) == 0 {
-				rmNum := (p.workNum - workerNumDefault) / 5
+			if p.workNum > p.defaultNum && len(p.taskPool) == 0 && len(p.taskQue) == 0 {
+				rmNum := (p.workNum - p.defaultNum) / 5
 				if rmNum == 0 {
 					rmNum = 1
 				}
